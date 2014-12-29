@@ -1,19 +1,18 @@
 //standard libraries
 #include <stdio.h>
 #include <stdlib.h>
-#include <Windows.h>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <GL/freeglut.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
 //header files
+#include "MainHeader.h"
 #include "LoaderShader.h"
 #include "LoadTexture.h"
-#include "MainHeader.h"
+#include "Control.h"
 
 using namespace glm;
 using namespace std;
@@ -26,17 +25,15 @@ GLuint programID;
 GLuint matrixID;
 GLuint textureID;
 GLuint texture;
-glm::mat4 projection;
-glm::mat4 view;
-glm::mat4 cubeModel;
-glm::mat4 cubeMVP;
+mat4 projection;
+mat4 view;
+mat4 cubeModel;
+mat4 cubeMVP;
 
 int main(int argc, char **argv) {
 	int windowWidth = 700;
 	int windowHeight = 500;
 	char *title = "Tutorial 08 - Using Mouse and Keyboard to Move Camera";
-
-	glutInit(&argc, argv);
 
 	//initialise GLFW
 	if (!glfwInit()) {
@@ -53,17 +50,16 @@ int main(int argc, char **argv) {
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetWindowPos(window, 400, 200);
-
-	// Initialize GLEW
-	glewExperimental = true; // Needed for core profile
-	if (glewInit() != GLEW_OK) {
-		fprintf(stderr, "Failed to initialize GLEW\n");
-		return -1;
-	}
-
 	//ensure we can capture the escape key being pressed below
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 	glfwSetCursorPos(window, windowWidth / 2, windowHeight / 2);
+
+	//initialize GLEW
+	glewExperimental = true;		// Needed for core profile
+	if (glewInit() != GLEW_OK) {
+		fprintf(stderr, "Failed to initialize GLEW\n");
+		return -1;
+	}	
 
 	//black background
 	glClearColor(0.0f, 0.0f, 0.4f, 1.0f);
@@ -94,8 +90,8 @@ int main(int argc, char **argv) {
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
-	} while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
-		glfwWindowShouldClose(window) == 0);
+	} while (glfwGetKey(window, GLFW_KEY_X) != GLFW_PRESS &&
+		glfwWindowShouldClose(window) == 0);	//close when the 'X' key is pressed
 
 	//close OpenGL window and terminate GLFW
 	glfwTerminate();
@@ -117,24 +113,7 @@ void renderScene() {
 	//use the shader
 	glUseProgram(programID);
 
-	//projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-	//or, for an ortho camera :
-	/*projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.0f, 100.0f); // In world coordinates*/
-
-	//camera matrix
-	view = glm::lookAt(
-		glm::vec3(4, 3, -3), //camera is at (4, 3, -3), in World Space
-		glm::vec3(0, 0, 0), //and looks at the origin
-		glm::vec3(0, 1, 0)  //head is up (set to 0,-1,0 to look upside-down)
-		);
-
-	//model matrix for cube : an identity matrix (model will be at the origin)
-	cubeModel = glm::mat4(1.0f);
-
-	//our ModelViewProjection : multiplication of our 3 matrices
-	//remember, matrix multiplication is the other way around
-	cubeMVP = projection * view * cubeModel;
+	prepareMVP();
 
 	// Send our transformation to the currently bound shader, 
 	// in the "cubeMVP" uniform
@@ -249,22 +228,14 @@ void createCubeTextureCoordBuffer() {
 }
 
 void prepareMVP() {
-	//projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-	//or, for an ortho camera :
-	/*projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.0f, 100.0f); // In world coordinates*/
+	computeMatricesFromInputs();
+	projection = getProjectionMatrix();
+	view = getViewMatrix();
 
-	//camera matrix
-	view = glm::lookAt(
-		glm::vec3(4, 3, -3), //camera is at (4, 3, -3), in World Space
-		glm::vec3(0, 0, 0), //and looks at the origin
-		glm::vec3(0, 1, 0)  //head is up (set to 0,-1,0 to look upside-down)
-		);
+	//model matrix for cube: an identity matrix (model will be at the origin)
+	cubeModel = mat4(1.0f);
 
-	//model matrix for cube : an identity matrix (model will be at the origin)
-	cubeModel = glm::mat4(1.0f);
-
-	//our ModelViewProjection : multiplication of our 3 matrices
+	//our ModelViewProjection: multiplication of our 3 matrices
 	//remember, matrix multiplication is the other way around
 	cubeMVP = projection * view * cubeModel;
 }

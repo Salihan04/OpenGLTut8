@@ -3,8 +3,10 @@
 
 #include <glm/glm.hpp>
 
+using namespace glm;
+
 void computeMatricesFromInputs();
-glm::mat4 getViewMatrix();
-glm::mat4 getProjectionMatrix();
+mat4 getProjectionMatrix();
+mat4 getViewMatrix();
 
 #endif

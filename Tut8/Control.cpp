@@ -56,21 +56,21 @@ void computeMatricesFromInputs() {
 	//Up vector
 	vec3 up = cross(right, direction);
 
-	//move forward
+	//move camera forward
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 		position += direction * deltaTime * speed;
 
-	//move backward
+	//move camera backward
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		position -= direction * deltaTime * speed;
 
-	//strafe right
+	//strafe camera right
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-		position -= right * deltaTime * speed;
-
-	//strafe left
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
 		position += right * deltaTime * speed;
+
+	//strafe camera left
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+		position -= right * deltaTime * speed;
 
 	//Projection matrix: 45° Field of View, 4:3 ratio, display range: [0.1, 100]
 	projectionMatrix = perspective(initialFoV, 4.0f / 3.0f, 0.1f, 100.0f);

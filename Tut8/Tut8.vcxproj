@@ -80,6 +80,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Control.cpp" />
     <ClCompile Include="LoadShader.cpp" />
     <ClCompile Include="LoadTexture.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -88,8 +89,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Control.h" />
     <ClInclude Include="LoaderShader.h" />
     <ClInclude Include="LoadTexture.h" />
+    <ClInclude Include="MainHeader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
